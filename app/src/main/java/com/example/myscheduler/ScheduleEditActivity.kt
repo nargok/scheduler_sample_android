@@ -31,6 +31,9 @@ class ScheduleEditActivity : AppCompatActivity() {
             dateEdit.setText(DateFormat.format("yyyy/MM/dd", schedule?.date))
             titleEdit.setText(schedule?.title)
             detailEdit.setText(schedule?.detail)
+            delete.visibility = View.VISIBLE
+        } else {
+            delete.visibility = View.INVISIBLE
         }
 
         save.setOnClickListener { view: View ->
@@ -65,6 +68,18 @@ class ScheduleEditActivity : AppCompatActivity() {
                         .show()
                 }
             }
+        }
+
+        delete.setOnClickListener {view: View ->
+            realm.executeTransaction{ db: Realm ->
+                db.where<Schedule>().equalTo("id", scheduleId)
+                    ?.findFirst()
+                    ?.deleteFromRealm()
+            }
+            Snackbar.make(view, "削除しました", Snackbar.LENGTH_SHORT)
+                .setAction("戻る") { finish() }
+                .setActionTextColor(Color.YELLOW)
+                .show()
         }
     }
 
